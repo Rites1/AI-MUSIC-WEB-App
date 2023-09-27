@@ -7,6 +7,7 @@ right_wrist_y = 0;
 score_left_wrist = 0;
 song_1_status = "";
 song_2_status = "";
+score_right_wrist = 0;
 
 function preload(){
     music_1 = loadSound("music.mp3");
@@ -24,21 +25,28 @@ function setup(){
 
 function draw(){
     image(webcam, 0, 0, 600, 500);
+    song_1_status = music_1.isPlaying();
+    song_2_status = music_2.isPlaying();
     fill("red");
     stroke("red");
-    if(left_wrist_x, left_wrist_y > 0.2){
+    if(score_left_wrist > 0.2){
         circle(left_wrist_x, left_wrist_y, 20);
-        music_1.play();
-        }
-        if(right_wrist_x, right_wrist_y > 0.2){
-            circle(right_wrist_x, right_wrist_y, 20);
+        music_1.stop();
+        if(song_2_status == false){
             music_2.play();
+            document.getElementById("song").innerHTML = "playing - Peter Pan Song";
+        }
+        }
+        if(score_right_wrist > 0.2){
+            circle(right_wrist_x, right_wrist_y, 20);
+            music_2.stop();
+            if(song_1_status == false){
+                music_1.play();
+                document.getElementById("song").innerHTML = "playing - Harry Potter";
+            }
         }
 }
 
-function pause() {
-    music_1.pause();
-}
 function modelloaded(){
     console.log("posenet is initilized");
 }
@@ -47,6 +55,7 @@ function gotposes(results){
     if(results.length > 0){
         console.log(results);
         score_left_wrist = results[0].pose.keypoints[9].score;
+        score_right_wrist = results[0].pose.keypoints[10].score;
         left_wrist_x = results[0].pose.leftWrist.x;
         left_wrist_y = results[0].pose.leftWrist.y;
         right_wrist_x = results[0].pose.rightWrist.x;
